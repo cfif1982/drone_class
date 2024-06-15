@@ -1,8 +1,13 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <windows.h> // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся
 
 using namespace std;
+
+// m 50
+// start
+// print
 
 class drone
 {
@@ -65,9 +70,37 @@ private:
 
 int main()
 {
+  SetConsoleOutputCP(CP_UTF8); // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся
+
   drone copter;
 
+  const int size = 10;
+  string mas[size];
+
+  cout << "Введите команду: ";
+  // for (int i = 0; i < size; ++i)
+  // {
+  //   cin >> mas[i];
+  // }
+  int i = 0;
+
   while (true)
+  {
+    string cmd;
+
+    cin >> cmd;
+
+    if (cmd == "start")
+    {
+      break;
+    }
+
+    mas[i] = cmd;
+
+    i++;
+  }
+
+  /*while (true)
   {
     copter.command();
     char command = copter.getCom();
@@ -104,7 +137,7 @@ int main()
     {
       cout << "Неизвестная команда. Попробуйте ещё раз." << endl;
     }
-  }
+  }*/
 
   return 0;
 }

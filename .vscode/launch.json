@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C++ Launch ",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": true, // Важно: используйте встроенный терминал
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "cppbuild",
+      "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
+      "logging": {
+        "engineLogging": true,
+        "trace": true,
+        "traceResponse": true
+        // "moduleLoad": false,
+        // "programOutput": true,
+        // "trace": false,
+        // "engineLogging": false
+      },
+      "launchCompleteCommand": "exec-run",
+      "debugServerPath": "",
+      "debugServerArgs": "",
+      "serverStarted": "",
+      "filterStderr": false,
+      "filterStdout": false,
+      "serverLaunchTimeout": 10000,
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}

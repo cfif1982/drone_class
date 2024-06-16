@@ -1,43 +1,43 @@
 #include <iostream>
-#include <string>
-#include <cmath>
-#include <windows.h> // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся. 
+#include <string>    // для работы с типом string
+#include <cmath>     // для использования sin и cos
+#include <windows.h> // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся.
 
-using namespace std;
+using namespace std; // для удобства использования cin и cout
 
-// m 50
-// start
-// print
+// структура для храения действия дрона
+struct action
+{
+  string actionType; //  тип действия: m - move, t - turn ...
+  int actionParam;   // параметр для этого действия: move(30)/ Здесь 30 - это параметр дейсттвия
+};
 
+// класс дрона
 class drone
 {
 public:
-  void command()
-  {
-    cout << "Введите команду (m - движение вперёд, r - поворот, h - изменение высоты): ";
-    cin >> com;
-  }
-
-  char getCom()
-  {
-    return com;
-  }
-
+  // выводит текущие координаты и угол поворота дрона
   void printCurrentCoords()
   {
-    cout << "Текущие координаты дрона: " << "(" << x << ", " << y << ", " << z << ")" << " Текущий угол поворота дрона: " << angle << " градусов" << endl;
+    cout << "координаты: " << "(" << x << ", " << y << ", " << z << ")" << "; угол: " << angle << endl;
   }
 
+  // движение дрона по направлению поворота на заданную дистанцию
   void move(int distance)
   {
+    // переводим угол из градусов в радианы. Это нужно для использования функций sin и cos
     double radians = angle * 3.14 / 180.0;
 
+    // находим синус и косинус угла направления дрона
     double sine = sin(radians);
     double cosine = cos(radians);
 
+    // нгаходим координаты перемещения дрона
     double x1 = distance * cosine;
     double y1 = distance * sine;
 
+    // если высота дрона равна 0, то дрон не двигается
+    // в протвном случае - перемещаемся на заданные координаты
     if (z != 0)
     {
       x = x + x1;
@@ -45,33 +45,53 @@ public:
     }
   }
 
+  // меняем угол поворота дрона
   void turn(int _angle)
   {
     angle = _angle;
   }
 
-  void heightChange(int _rise)
+  // меняем высоту дрона
+  void changeHeight(int height)
   {
-    z = z + _rise;
+    z = z + height;
 
+    // высота дрона не может быть меньше 0
     if (z < 0)
     {
       z = 0;
     }
   }
 
+  void loadProgram(const string mas[], int masSize)
+  {
+    // // разбираем строку
+    // string str = "m 200";
+    // string part1 = str.substr(0, 1);
+    // int len = str.size() - 2;
+    // string part2 = str.substr(2, len);
+    // cout << part1 << endl;
+    // cout << part2 << endl;
+    // cout << len << endl;
+
+    // // переводим строку в число
+    // int num = stoi(part2);
+    // cout << num << endl;
+
+    program[0].actionType = part1;
+  }
+
 private:
-  char com;
+  // храним координаты дрона
   double x = 0;
   double y = 0;
-  double z = 0;
-  double angle = 0;
+
+  double z = 0; // храним высоту дрона
+
+  double angle = 0; // храним угол поворота дрона
+
+  action program[10]; // массив из 10 элементов типа action
 };
-
-
-// у тебя другой компилятор((( сейчас настройки поправим. Но тогда каждый раз придется у меня их  менять, чтобы на моем компе можно было запускать без проблем
-//а потом у тебя обратно менять
-// чтобы этого не делать, мы исключим файлы launch и tasks из обновления в git
 
 int main()
 {
@@ -81,69 +101,64 @@ int main()
   drone copter;
 
   const int size = 10;
-  string mas[size];
+  string mas[size]; // массив для хранения введенных пользователем строк
 
-  cout << "Введите команду: ";
-  // for (int i = 0; i < size; ++i)
-  // {
-  //   cin >> mas[i];
-  // }
-  int i = 0;
+  int commandCount = 0; // счетчик индекса массива
 
+  string cmd; // храним строку-команду от юзера
+
+  // цикл запроса команд от юзера
   while (true)
   {
-    string cmd;
-
+    cout << "Введите команду: ";
     cin >> cmd;
 
+    // если команда start, то выходим из цикла
     if (cmd == "start")
     {
       break;
     }
 
-    mas[i] = cmd;
-
-    i++;
+    // сохраняем команду в массив из переменной cmd
+    mas[commandCount++] = cmd;
   }
 
-  /*while (true)
-  {
-    copter.command();
-    char command = copter.getCom();
+  // загружаем команды в дрон
+  copter.loadProgram(mas, size);
 
-    if (command == 'm')
-    {
-      int _distance;
-      cout << "Введите расстояние: ";
-      cin >> _distance;
-      copter.move(_distance);
-      copter.printCurrentCoords();
-    }
-    else if (command == 'r')
-    {
-      int _angle;
-      cout << "Введите угол поворота: ";
-      cin >> _angle;
-      copter.turn(_angle);
-      copter.printCurrentCoords();
-    }
-    else if (command == 'h')
-    {
-      int _rise;
-      cout << "Введите изменение высоты: ";
-      cin >> _rise;
-      copter.heightChange(_rise);
-      copter.printCurrentCoords();
-    }
-    else if (command == 'q')
-    {
-      break;
-    }
-    else
-    {
-      cout << "Неизвестная команда. Попробуйте ещё раз." << endl;
-    }
-  }*/
+  //  for (int i = 0; i <= size; ++i)
+  //  {
+  //    string _cmd = mas[i];
+
+  //   if (_cmd == "m")
+  //   {
+  //     int _distance;
+  //     cout << "Введите расстояние: ";
+  //     cin >> _distance;
+  //     copter.move(_distance);
+  //     copter.printCurrentCoords();
+  //   }
+  //   else if (_cmd == "r")
+  //   {
+  //     int _angle;
+  //     cout << "Введите угол поворота: ";
+  //     cin >> _angle;
+  //     copter.turn(_angle);
+  //     copter.printCurrentCoords();
+  //   }
+  //   else if (_cmd == "h")
+  //   {
+  //     int _rise;
+  //     cout << "Введите изменение высоты: ";
+  //     cin >> _rise;
+  //     copter.changeHeight(_rise);
+  //     copter.printCurrentCoords();
+  //   }
+  //   else
+  //   {
+  //     cout << "Неизвестная команда. Попробуйте ещё раз." << endl;
+  //   }
+  // }
 
   return 0;
 }

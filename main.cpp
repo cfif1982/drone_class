@@ -3,105 +3,68 @@
 #include <cmath>     // для использования sin и cos
 #include <windows.h> // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся.
 
+#include "drone_class.h" // подключаем класс дрона
+
 using namespace std; // для удобства использования cin и cout
 
-// структура для храения действия дрона
-struct action
+const int array_size = 10; // размер массива mas
+
+void printStrings(const std::string arr[], int size)
 {
-  string actionType; //  тип действия: m - move, t - turn ...
-  int actionParam;   // параметр для этого действия: move(30)/ Здесь 30 - это параметр дейсттвия
-};
-
-// класс дрона
-class drone
-{
-public:
-  // выводит текущие координаты и угол поворота дрона
-  void printCurrentCoords()
+  for (int i = 0; i < size; ++i)
   {
-    cout << "координаты: " << "(" << x << ", " << y << ", " << z << ")" << "; угол: " << angle << endl;
+    std::cout << arr[i] << std::endl;
   }
+}
 
-  // движение дрона по направлению поворота на заданную дистанцию
-  void move(int distance)
-  {
-    // переводим угол из градусов в радианы. Это нужно для использования функций sin и cos
-    double radians = angle * 3.14 / 180.0;
-
-    // находим синус и косинус угла направления дрона
-    double sine = sin(radians);
-    double cosine = cos(radians);
-
-    // нгаходим координаты перемещения дрона
-    double x1 = distance * cosine;
-    double y1 = distance * sine;
-
-    // если высота дрона равна 0, то дрон не двигается
-    // в протвном случае - перемещаемся на заданные координаты
-    if (z != 0)
-    {
-      x = x + x1;
-      y = y + y1;
-    }
-  }
-
-  // меняем угол поворота дрона
-  void turn(int _angle)
-  {
-    angle = _angle;
-  }
-
-  // меняем высоту дрона
-  void changeHeight(int height)
-  {
-    z = z + height;
-
-    // высота дрона не может быть меньше 0
-    if (z < 0)
-    {
-      z = 0;
-    }
-  }
-
-  void loadProgram(const string mas[], int masSize)
-  {
-    // // разбираем строку
-    // string str = "m 200";
-    // string part1 = str.substr(0, 1);
-    // int len = str.size() - 2;
-    // string part2 = str.substr(2, len);
-    // cout << part1 << endl;
-    // cout << part2 << endl;
-    // cout << len << endl;
-
-    // // переводим строку в число
-    // int num = stoi(part2);
-    // cout << num << endl;
-
-    program[0].actionType = part1;
-  }
-
-private:
-  // храним координаты дрона
-  double x = 0;
-  double y = 0;
-
-  double z = 0; // храним высоту дрона
-
-  double angle = 0; // храним угол поворота дрона
-
-  action program[10]; // массив из 10 элементов типа action
-};
-
+/*
+в tasks.json измени строчки:
+"-g",
+"*.cpp", - вот так должжна строка выглядеть
+*/
 int main()
 {
+  action obj1;
+  obj1.actionType = "q1";
+  obj1.actionParam = 200;
+
+  action obj2;
+  obj1.actionType = "q2";
+  obj1.actionParam = 300;
+
+  action obj3;
+  obj1.actionType = "q3";
+  obj1.actionParam = 100;
+
+  string name1 = "Nastya1";
+  string name2 = "Nastya2";
+  string name3 = "Nastya3";
+
+  string mas_string[3];
+
+  mas_string[0] = name1;
+  mas_string[1] = name2;
+  mas_string[2] = name3;
+
+  cout << mas_string[0] << endl;
+
+  action mas_act[3]; // массив из 10 элементов типа action
+  mas_act[0] = obj1;
+  mas_act[1] = obj2;
+  mas_act[2] = obj3;
+
+  cout << mas_act[0].actionParam << endl;
+
+  mas_act[1].actionParam = 400;
+
+  int a = mas_act[2].actionParam;
+
   // этой функцией мы устанавливаем нужную кодировку. И русские буквы правильно отображаюьтся
   SetConsoleOutputCP(CP_UTF8); // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся
 
-  drone copter;
+  drone copter; // инициализируем объект коптер
 
-  const int size = 10;
-  string mas[size]; // массив для хранения введенных пользователем строк
+  string mas[array_size]; // массив для хранения введенных пользователем строк
 
   int commandCount = 0; // счетчик индекса массива
 
@@ -124,7 +87,7 @@ int main()
   }
 
   // загружаем команды в дрон
-  copter.loadProgram(mas, size);
+  copter.loadProgram(mas, array_size);
 
   //  for (int i = 0; i <= size; ++i)
   //  {

@@ -1,127 +1,106 @@
 #include <iostream>
-#include <string>    // для работы с типом string
-#include <cmath>     // для использования sin и cos
-#include <windows.h> // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся.
+#include <string>
+#include <cmath>
+#include <windows.h> // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся. 
 
-#include "drone_class.h" // подключаем класс дрона
+using namespace std;
 
-using namespace std; // для удобства использования cin и cout
-
-const int array_size = 10; // размер массива mas
-
-void printStrings(const std::string arr[], int size)
+class drone
 {
-  for (int i = 0; i < size; ++i)
+public:
+  void command()
   {
-    std::cout << arr[i] << std::endl;
-  }
-}
+    cout << "Введите команду (m - движение вперёд, r - поворот, h - изменение высоты): ";
+    cin >> com;
+  } //получаем команду
 
-/*
-в tasks.json измени строчки:
-"-g",
-"*.cpp", - вот так должжна строка выглядеть
-*/
+  char getCom()
+  {
+    return com;
+  }
+
+  void printCurrentCoords()
+  {
+    cout << "Текущие координаты дрона: " << "(" << x << ", " << y << ", " << z << ")" << " Текущий угол поворота дрона: " << angle << " градусов" << endl;
+  }
+
+  void move(int distance)
+  {
+    double radians = angle * M_PI / 180.0;
+
+    double sine = sin(radians);
+    double cosine = cos(radians);
+
+    double x1 = distance * cosine;
+    double y1 = distance * sine;
+
+    if (z != 0)
+    {
+      x = x + x1;
+      y = y + y1;
+    }
+  }
+
+  void turn(int _angle)
+  {
+    angle = _angle;
+  }
+
+  void heightChange(int _rise)
+  {
+    z = z + _rise;
+
+    if (z < 0)
+    {
+      z = 0;
+    }
+  }
+
+private:
+  char com;
+  double x = 0;
+  double y = 0;
+  double z = 0;
+  double angle = 0; //поля класса дрона
+};
 int main()
 {
-  action obj1;
-  obj1.actionType = "q1";
-  obj1.actionParam = 200;
+  // этой функцией мы устанавливаем нужную кодировку. И русские буквы правильно отображаются
+  SetConsoleOutputCP(CP_UTF8); // нужна для вывода русских букв в консоли
 
-  action obj2;
-  obj1.actionType = "q2";
-  obj1.actionParam = 300;
+  drone copter;
 
-  action obj3;
-  obj1.actionType = "q3";
-  obj1.actionParam = 100;
+  const int size = 3;
+  string mas[size]; //массив для хранения команд и их значений
 
-  string name1 = "Nastya1";
-  string name2 = "Nastya2";
-  string name3 = "Nastya3";
-
-  string mas_string[3];
-
-  mas_string[0] = name1;
-  mas_string[1] = name2;
-  mas_string[2] = name3;
-
-  cout << mas_string[0] << endl;
-
-  action mas_act[3]; // массив из 10 элементов типа action
-  mas_act[0] = obj1;
-  mas_act[1] = obj2;
-  mas_act[2] = obj3;
-
-  cout << mas_act[0].actionParam << endl;
-
-  mas_act[1].actionParam = 400;
-
-  int a = mas_act[2].actionParam;
-
-  // этой функцией мы устанавливаем нужную кодировку. И русские буквы правильно отображаюьтся
-  SetConsoleOutputCP(CP_UTF8); // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся
-
-  drone copter; // инициализируем объект коптер
-
-  string mas[array_size]; // массив для хранения введенных пользователем строк
-
-  int commandCount = 0; // счетчик индекса массива
-
-  string cmd; // храним строку-команду от юзера
-
-  // цикл запроса команд от юзера
-  while (true)
+  //считывание команд в массив
+  cout << "Введите команды: " << endl;
+  for (int i = 0; i < size; ++i) //считываем команды и значения
   {
-    cout << "Введите команду: ";
-    cin >> cmd;
+    getline(cin, mas[i]);
 
-    // если команда start, то выходим из цикла
-    if (cmd == "start")
+    char command = mas[i][0]; //здесь хранится команда
+    string value_str = mas[i].substr(2);
+    int value = stoi(value_str); //здесь хранится значение
+
+    if (command == 'h')
     {
-      break;
+      copter.heightChange(value);
     }
-
-    // сохраняем команду в массив из переменной cmd
-    mas[commandCount++] = cmd;
+    else if (command == 't')
+    {
+      copter.turn(value);
+    }
+    else if (command =='m')
+    {
+      copter.move(value);
+    }
+    else
+    {
+      cout << "Неверная команда." << endl;
+      return 0;
+    }
+    copter.printCurrentCoords();
   }
-
-  // загружаем команды в дрон
-  copter.loadProgram(mas, array_size);
-
-  //  for (int i = 0; i <= size; ++i)
-  //  {
-  //    string _cmd = mas[i];
-
-  //   if (_cmd == "m")
-  //   {
-  //     int _distance;
-  //     cout << "Введите расстояние: ";
-  //     cin >> _distance;
-  //     copter.move(_distance);
-  //     copter.printCurrentCoords();
-  //   }
-  //   else if (_cmd == "r")
-  //   {
-  //     int _angle;
-  //     cout << "Введите угол поворота: ";
-  //     cin >> _angle;
-  //     copter.turn(_angle);
-  //     copter.printCurrentCoords();
-  //   }
-  //   else if (_cmd == "h")
-  //   {
-  //     int _rise;
-  //     cout << "Введите изменение высоты: ";
-  //     cin >> _rise;
-  //     copter.changeHeight(_rise);
-  //     copter.printCurrentCoords();
-  //   }
-  //   else
-  //   {
-  //     cout << "Неизвестная команда. Попробуйте ещё раз." << endl;
-  //   }
-  // }
-
   return 0;
 }

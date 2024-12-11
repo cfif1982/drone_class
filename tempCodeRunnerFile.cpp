@@ -1,0 +1,1 @@
+move:50;height:30;rotate:40;

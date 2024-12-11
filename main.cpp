@@ -1,22 +1,85 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <windows.h> // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся. 
+#include <windows.h> // нужна для вывода русских букв в консоли. Иначе иероглифы выводятся.
 
 using namespace std;
+
+const int SIZE1 = 10; // количество элементов в массиве команд
+// move_50;height_30;rotate_40;
+// move:50;height:30;rotate:40;
+
+struct Command
+{
+  string type;
+  int value;
+};
 
 class drone
 {
 public:
-  void command()
+  // получаем данные от юзера
+  void dataReceive()
   {
-    cout << "Введите команду (m - движение вперёд, r - поворот, h - изменение высоты): ";
-    cin >> com;
-  } //получаем команду
+    string data;               // храним введенные юзером данные
+    string next_command = ";"; // отделяет команды
+    string next_value = "_";   // отделяет тип и значение
+    int com_counter = 0;       // счетчик команд в массиве
+    bool flag_type = true;     // флаг для определения с чем работаем: тип или значение
+    // временная переменная для хранения значения команды в виде строки
+    // когда эта строку будет полностью сформирована, тогда конвертирем ее в число
+    string temp = "";
 
-  char getCom()
-  {
-    return com;
+    cout << "Введите данные: ";
+    cin >> data; // сохраняем введенные данные в com
+
+    for (int i = 0; i < data.size(); i++)
+    {
+      // если текущий символ == ";" то это означает
+      // что мы начинаем работать со следующей командой
+      // а текущая команда закончилась
+      if (data.substr(i, 1) == next_command)
+      {
+        // переводим строку в число и сохраняем его в массив команд
+        commands[com_counter].value = stoi(temp);
+
+        temp = "";        // обнуляем строку для числа
+        flag_type = true; // устанавливаем флаг типа. Это означает что будет записываться тип команды
+
+        com_counter++; // переходим к записи в следующий элемент массива команд
+      }
+      // если текущий символ == " "
+      else if (data.substr(i, 1) == next_value)
+      {
+        // снимаем флаг работы с типом команды
+        // это значит, что мы закончили работать с типом комнады
+        // и начинаем рабоать со значением команды
+        flag_type = false;
+      }
+      // если это любой другой символ
+      else
+      {
+        // если мы сейчас работаем с типом команды
+        if (flag_type == true)
+        {
+          // добавляем текущий символ к полю тип команды
+          commands[com_counter].type += data.substr(i, 1);
+        }
+        // иначе означает, что мы сейчас рабоатем со значением команды
+        else
+        {
+          // добавляем текущий символ к переменной в которой хранится значение команды
+          // чтобы в дальнейшем перевести эту строку в число
+          temp += data.substr(i, 1);
+        }
+      }
+    }
+
+    for (int i = 0; i < com_counter; i++)
+    {
+      cout << "Команда:" << commands[i].type << endl;
+      cout << "Значение:" << commands[i].value << endl;
+    }
   }
 
   void printCurrentCoords()
@@ -57,11 +120,13 @@ public:
   }
 
 private:
-  char com;
+  // поля класса дрона
   double x = 0;
   double y = 0;
   double z = 0;
-  double angle = 0; //поля класса дрона
+  double angle = 0;
+
+  Command commands[SIZE1]; // массив команд
 };
 int main()
 {
@@ -70,37 +135,7 @@ int main()
 
   drone copter;
 
-  const int size = 3;
-  string mas[size]; //массив для хранения команд и их значений
+  copter.dataReceive();
 
-  //считывание команд в массив
-  cout << "Введите команды: " << endl;
-  for (int i = 0; i < size; ++i) //считываем команды и значения
-  {
-    getline(cin, mas[i]);
-
-    char command = mas[i][0]; //здесь хранится команда
-    string value_str = mas[i].substr(2);
-    int value = stoi(value_str); //здесь хранится значение
-
-    if (command == 'h')
-    {
-      copter.heightChange(value);
-    }
-    else if (command == 't')
-    {
-      copter.turn(value);
-    }
-    else if (command =='m')
-    {
-      copter.move(value);
-    }
-    else
-    {
-      cout << "Неверная команда." << endl;
-      return 0;
-    }
-    copter.printCurrentCoords();
-  }
   return 0;
 }
